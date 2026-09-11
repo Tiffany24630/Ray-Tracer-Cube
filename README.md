@@ -12,9 +12,6 @@
     cargo run
     ```
 
-Link: 
-<figure class="video_container">
-  <iframe src="vid/test.mp4" frameborder="0" allowfullscreen="true"> 
-</iframe>
-</figure>
-<video controls src="" title="Title"></video>
+Link: https://youtu.be/Rys7_WTluI4 
+
+<video controls src="Video" title="Cubo texturizado"></video>
