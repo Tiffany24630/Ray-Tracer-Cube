@@ -30,21 +30,13 @@ pub fn reflect(incident: &Vec3, normal: &Vec3) -> Vec3 {
 }
 
 fn mix_colors(base: Color, accent: Color, factor: f32) -> Color {
-    let influence = factor.clamp(0.0, 1.0);
-    let r = ((base.r as f32 * (1.0 - influence) + accent.r as f32 * influence).round() as i32)
-        .clamp(0, 255) as u8;
-    let g = ((base.g as f32 * (1.0 - influence) + accent.g as f32 * influence).round() as i32)
-        .clamp(0, 255) as u8;
-    let b = ((base.b as f32 * (1.0 - influence) + accent.b as f32 * influence).round() as i32)
-        .clamp(0, 255) as u8;
-
-    Color::new(r, g, b)
+    base.blend(accent, factor)
 }
 
 fn wood_texture(point: &Vec3) -> Color {
     let radial = point.x * 6.0 + point.z * 4.0 + point.y * 1.5;
     let grain = (radial * 1.8).sin();
-    let rings = ((point.x * 4.5 + point.z * 3.0 + point.y * 2.0).sin() * 0.5 + 0.5);
+    let rings = (point.x * 4.5 + point.z * 3.0 + point.y * 2.0).sin() * 0.5 + 0.5;
     let variation = (grain * 0.6 + rings * 0.4 + 1.0) * 0.5;
 
     let dark = Color::new(75, 46, 20);

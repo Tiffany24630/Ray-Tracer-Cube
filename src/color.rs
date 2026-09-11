@@ -24,6 +24,18 @@ impl Color {
     pub fn to_hex(&self) -> u32 {
         ((self.r as u32) << 16) | ((self.g as u32) << 8) | (self.b as u32)
     }
+
+    pub fn blend(self, other: Color, factor: f32) -> Self {
+        let amount = factor.clamp(0.0, 1.0);
+        let r = ((self.r as f32 * (1.0 - amount) + other.r as f32 * amount).round() as i32)
+            .clamp(0, 255) as u8;
+        let g = ((self.g as f32 * (1.0 - amount) + other.g as f32 * amount).round() as i32)
+            .clamp(0, 255) as u8;
+        let b = ((self.b as f32 * (1.0 - amount) + other.b as f32 * amount).round() as i32)
+            .clamp(0, 255) as u8;
+
+        Color::new(r, g, b)
+    }
 }
 
 impl Add for Color {
