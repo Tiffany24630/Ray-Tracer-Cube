@@ -13,4 +13,8 @@
     ```
 
 Link: 
-<video controls src="20260911-0241-12.7949547.mp4" title="Title"></video>
+<figure class="video_container">
+  <iframe src="vid/test.mp4" frameborder="0" allowfullscreen="true"> 
+</iframe>
+</figure>
+<video controls src="" title="Title"></video>

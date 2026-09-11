@@ -29,13 +29,36 @@ pub fn reflect(incident: &Vec3, normal: &Vec3) -> Vec3 {
     incident - normal * (2.0 * dot(incident, normal))
 }
 
+fn mix_colors(base: Color, accent: Color, factor: f32) -> Color {
+    let influence = factor.clamp(0.0, 1.0);
+    let r = ((base.r as f32 * (1.0 - influence) + accent.r as f32 * influence).round() as i32)
+        .clamp(0, 255) as u8;
+    let g = ((base.g as f32 * (1.0 - influence) + accent.g as f32 * influence).round() as i32)
+        .clamp(0, 255) as u8;
+    let b = ((base.b as f32 * (1.0 - influence) + accent.b as f32 * influence).round() as i32)
+        .clamp(0, 255) as u8;
+
+    Color::new(r, g, b)
+}
+
+fn wood_texture(point: &Vec3) -> Color {
+    let radial = point.x * 6.0 + point.z * 4.0 + point.y * 1.5;
+    let grain = (radial * 1.8).sin();
+    let rings = ((point.x * 4.5 + point.z * 3.0 + point.y * 2.0).sin() * 0.5 + 0.5);
+    let variation = (grain * 0.6 + rings * 0.4 + 1.0) * 0.5;
+
+    let dark = Color::new(75, 46, 20);
+    let light = Color::new(189, 133, 78);
+    mix_colors(dark, light, variation)
+}
+
 pub fn shade(intersect: &Intersect, ray_origin: &Vec3, light: &Light) -> Color {
     let light_direction = (light.position - intersect.point).normalize();
     let view_direction = (ray_origin - intersect.point).normalize();
 
     let diffuse_intensity = dot(&intersect.normal, &light_direction).max(0.0);
-    let diffuse = intersect.material.diffuse
-        * (diffuse_intensity * intersect.material.albedo[0] * light.intensity);
+    let wood_color = wood_texture(&intersect.point);
+    let diffuse = wood_color * (diffuse_intensity * intersect.material.albedo[0] * light.intensity);
 
     let reflect_direction = reflect(&-light_direction, &intersect.normal);
     let specular_intensity = dot(&view_direction, &reflect_direction)
@@ -100,6 +123,18 @@ pub fn render(
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn wood_texture_changes_with_position() {
+        let a = wood_texture(&Vec3::new(0.0, 0.0, 0.0));
+        let b = wood_texture(&Vec3::new(0.75, 0.2, -0.3));
+        assert_ne!(a.to_hex(), b.to_hex());
+    }
+}
+
 fn main() {
     let frame_delay = Duration::from_millis(16);
 
@@ -107,7 +142,7 @@ fn main() {
 
     let mut window = Window::new("Lakitu", WIDTH, HEIGHT, WindowOptions::default()).unwrap();
 
-    let cube_material = Material::new(Color::new(40, 180, 80), 8.0, [0.95, 0.05]);
+    let cube_material = Material::new(Color::new(120, 80, 45), 8.0, [0.95, 0.05]);
 
     let objects: Vec<Box<dyn RayIntersect>> = vec![Box::new(Cube::new(
         Vec3::new(-1.0, -1.0, -1.0),
