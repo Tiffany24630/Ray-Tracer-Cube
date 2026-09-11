@@ -107,15 +107,13 @@ fn main() {
 
     let mut window = Window::new("Lakitu", WIDTH, HEIGHT, WindowOptions::default()).unwrap();
 
-    let cube_material = Material::new(Color::new(70, 130, 210), 8.0, [0.95, 0.05]);
+    let cube_material = Material::new(Color::new(40, 180, 80), 8.0, [0.95, 0.05]);
 
-    let objects: Vec<Box<dyn RayIntersect>> = vec![
-        Box::new(Cube::new(
-            Vec3::new(-1.0, -1.0, -1.0),
-            Vec3::new(1.0, 1.0, 1.0),
-            cube_material,
-        )),
-    ];
+    let objects: Vec<Box<dyn RayIntersect>> = vec![Box::new(Cube::new(
+        Vec3::new(-1.0, -1.0, -1.0),
+        Vec3::new(1.0, 1.0, 1.0),
+        cube_material,
+    ))];
 
     let light = Light::new(Vec3::new(-6.0, 6.0, 8.0), Color::new(255, 255, 255), 1.5);
 
